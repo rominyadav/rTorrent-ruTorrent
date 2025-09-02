@@ -221,3 +221,24 @@ To restart the containers, run the following command:
 ```
 docker compose up -d
 ```
+
+
+To add new user
+add this to caddy file
+:8085 {
+    encode zstd gzip
+    basicauth {
+        romin {$BASIC_HASH}
+        alice $$2a$$14$$<Alice_Hash_Here>
+    }
+    reverse_proxy rutorrent:80
+}
+
+Generate a bcrypt hash for the new user
+
+docker compose run --rm caddy caddy hash-password --plaintext 'alicepassword'
+
+docker compose restart caddy
+
+
+
