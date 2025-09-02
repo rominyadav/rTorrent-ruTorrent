@@ -1,0 +1,8 @@
+:8085 {
+    encode zstd gzip
+    basicauth {
+        romin {$BASIC_HASH}
+    }
+    reverse_proxy rutorrent:80
+}
+

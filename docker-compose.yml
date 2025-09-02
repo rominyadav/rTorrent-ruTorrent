@@ -1,0 +1,37 @@
+services:
+  rutorrent:
+    image: lscr.io/linuxserver/rutorrent:latest
+    container_name: rutorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Kathmandu
+      - UMASK=002
+    volumes:
+      # Mount host folders into container
+      - /srv/dev-disk-by-uuid-4ee39c88-ada8-4cab-b3cd-927c2c7a311b/home/romin/downloads:/downloads
+      - /srv/dev-disk-by-uuid-4ee39c88-ada8-4cab-b3cd-927c2c7a311b/Movies:/Movies
+      - /srv/dev-disk-by-uuid-4ee39c88-ada8-4cab-b3cd-927c2c7a311b/home/romin/containers/qbittorrent/config:/config
+      - /srv/dev-disk-by-uuid-4ee39c88-ada8-4cab-b3cd-927c2c7a311b/home/romin/containers/qbittorrent/cache:/cache
+    expose:
+      - "80"
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy-rutorrent
+    depends_on:
+      - rutorrent
+    ports:
+      - "8085:8085"
+      # Uncomment below if you want HTTPS on a free port
+      # - "8443:443"
+    environment:
+      - RUTORRENT_DOMAIN=tor.rominyadav.com.np
+      - BASIC_USER=romin
+      - BASIC_HASH=${BASIC_HASH}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy_data:/data
+      - ./caddy_config:/config
+    restart: unless-stopped
